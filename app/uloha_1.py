@@ -7,7 +7,7 @@ def solve_problem():
     eta = 0.5  # počáteční odhad
     eps = 1e-4  # mez pro stanovení konvergence eta (dle volby)
     k = 0  # čítač iterací při určení eta
-    eta_prev = eta + 2 * eps  # předchozí hodnota eta; nyní pouze dočasná hodnota pro umožnění prvního průchodu while cyklem
+    eta_prev = eta + 2*eps  # předchozí hodnota eta; nyní pouze dočasná hodnota pro umožnění prvního průchodu while cyklem
 
     max_iter = 1e3  # omezení počtu iterací jako bezpečnostní opatření
 
@@ -16,9 +16,9 @@ def solve_problem():
 
     # derivace závislých proměnných:
     dy1 = lambda x, y1, y2: y2
-    dy2 = lambda x, y1, y2: y1**2 - y2 / x
+    dy2 = lambda x, y1, y2: y1**2 - y2/x
     dp1 = lambda x, y1, y2, p1, p2: p2
-    dp2 = lambda x, y1, y2, p1, p2: 2 * y1 * p1 - p2 / x
+    dp2 = lambda x, y1, y2, p1, p2: 2*y1*p1 - p2/x
 
     # vektor derivací ve formě použitelné pro scipy funkci solve_ivp
     du = lambda x, u: (dy1(x, *u[0:2]), dy2(x, *u[0:2]), dp1(x, *u), dp2(x, *u))
@@ -47,7 +47,7 @@ def solve_problem():
 
         # uložení staré hodnoty eta a získání nové Newtonovou metodou
         eta_prev = eta
-        eta = eta - theta / dtheta
+        eta = eta - theta/dtheta
         print('k = {:.0f}    eta ={:7.4f}    theta ={:7.4f}'.format(k, eta, theta))
 
     print('Dosažena konvergence, zahájeno poslední řešení')

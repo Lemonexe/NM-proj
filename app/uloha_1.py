@@ -1,16 +1,15 @@
-import numpy as np
 from scipy.integrate import solve_ivp
 from matplotlib import pyplot as plt
 
 
 # funkce řídící logiku algoritmu od začátku do konce
 def solve_problem():
-    eta = 0.5  # počáteční odhad (nulová koncentrace v jádru katalytické částice)
-    eps = 1e-3  # mez pro stanovení konvergence eta
+    eta = 0.5  # počáteční odhad
+    eps = 1e-4  # mez pro stanovení konvergence eta (dle volby)
     k = 0  # čítač iterací při určení eta
     eta_prev = eta + 2 * eps  # předchozí hodnota eta; nyní pouze dočasná hodnota pro umožnění prvního průchodu while cyklem
 
-    max_iter = 1e3  # bezpečnostní opatření
+    max_iter = 1e3  # omezení počtu iterací jako bezpečnostní opatření
 
     # závislé proměnné sady diferenciálních rovnic: y1, y2, p1, p2
     # dohromady tvoří vektor u = (y1, y2, p1, p2)
@@ -25,13 +24,13 @@ def solve_problem():
     du = lambda x, u: (dy1(x, *u[0:2]), dy2(x, *u[0:2]), dp1(x, *u), dp2(x, *u))
 
     # rozsah nezávislé veličiny x; nelze počítat přesně od nuly (neurčitý výraz dy2)
-    x_span = (1e-6, 1)
+    x_span = (1e-8, 1)
 
     # cyklus pro opakovaný výpočet eta, dokud není splněno kritérium konvergence
     while abs(eta - eta_prev) > eps:
+        k += 1
         if k > max_iter:
             raise Exception(f'Konvergence nedosažena při {k} iteracích')
-            break
 
         # získat vektor počátečních podmínek, viz deklarace get_u_i
         u_i = get_u_i(eta)
@@ -47,27 +46,24 @@ def solve_problem():
         dtheta = p1_e
 
         # uložení staré hodnoty eta a získání nové Newtonovou metodou
-        k += 1
         eta_prev = eta
         eta = eta - theta / dtheta
-        print('k = {:.0f};  eta = {:7.4f};  theta = {:7.4f}'.format(k, eta, theta))
+        print('k = {:.0f}    eta ={:7.4f}    theta ={:7.4f}'.format(k, eta, theta))
 
     print('Dosažena konvergence, zahájeno poslední řešení')
 
     # získat řešení pro konečnou hodnotu eta
-    # závislé proměnné sady diferenciálních rovnic jsou nyní pouze: y1, y2
-    # dohromady tvoří vektor u = (y1, y2)
-
+    # přičemž závislé proměnné sady diferenciálních rovnic jsou nyní pouze u = (y1, y2)
+    # toto řešení je provedeno s větší přesností (nižší max_step)
     du = lambda x, u: (dy1(x, *u), dy2(x, *u))
     u_i = get_u_i(eta)[0:2]
-    sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=1e-3)
+    sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=1e-4)
     x = sol.t
     u = sol.y
     y1 = u[0, :]
     y2 = u[1, :]
-    y1_e, y2_e = u[:, -1]
     print('Okrajové hodnoty výsledného řešení:')
-    print('y1(1) = {:7.4f};  y2(1) = {:7.4f}'.format(y1_e, y2_e))
+    print('y(1) ={:7.4f}    dy(1)/dx ={:7.4f}'.format(y1[-1], y2[-1]))
     print('Pro úplné řešení viz graf')
     draw_result(x, y1, y2)
 
@@ -81,6 +77,7 @@ def get_u_i(eta):
     return (y1_i, y2_i, p1_i, p2_i)
 
 
+# vykreslit graf z řešení diferenciální rovnice
 def draw_result(x, y1, y2):
     plt.plot(x, y1, '-k', label='y')
     plt.plot(x, y2, ':k', label='dy/dx')

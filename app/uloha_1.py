@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.integrate import solve_ivp
+from matplotlib import pyplot as plt
 
 
 # funkce řídící logiku algoritmu od začátku do konce
@@ -37,7 +38,6 @@ def solve_problem():
 
         # získat řešení pro dané eta
         sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=1e-3)
-        x = sol.t
         u = sol.y
         # okrajové hodnoty y1(1), y2(1), p1(1), p2(1)
         y1_e, y2_e, p1_e, p2_e = u[:, -1]
@@ -69,6 +69,7 @@ def solve_problem():
     print('Okrajové hodnoty výsledného řešení:')
     print('y1(1) = {:7.4f};  y2(1) = {:7.4f}'.format(y1_e, y2_e))
     print('Pro úplné řešení viz graf')
+    draw_result(x, y1, y2)
 
 
 # pro dané eta vygenerovat vektor hodnot počátečních podmínek u = y1(0), y2(0), p1(0), p2(0)
@@ -78,6 +79,18 @@ def get_u_i(eta):
     p1_i = 1
     p2_i = 0
     return (y1_i, y2_i, p1_i, p2_i)
+
+
+def draw_result(x, y1, y2):
+    plt.plot(x, y1, '-k', label='y')
+    plt.plot(x, y2, ':k', label='dy/dx')
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    plt.title('Řešení úlohy 1')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend(loc='lower right')
+    plt.show()
 
 
 # spustit program

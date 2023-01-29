@@ -2,14 +2,16 @@ import numpy as np
 from numpy.linalg import solve
 from matplotlib import pyplot as plt
 
-np.set_printoptions(precision=3)
+# np.set_printoptions(precision=3) # pro debug
 
 
 # funkce řídící logiku algoritmu od začátku do konce
 def solve_problem():
+    delta = 1  # bezrozměrná rychlostní konstanta reakce
+
     # počet úseků, tedy počet členů je n+1, m+1
-    n = 10
-    m = 10
+    n = 100
+    m = 100
     # krok
     k = 1 / n
     h = 1 / m
@@ -27,7 +29,7 @@ def solve_problem():
     u_final[0, :] = u_i0  # první řádek (j=0) známe
 
     C = k / h / h  # alpha = k/h^2, pro snazší zápis pojmenováno C
-    D = lambda u: 1 + C + u  # prostřední člen pásu matice (je závislý na u[j, i] z předchozího řádku u)
+    D = lambda u: 1 + C + delta*k*u  # prostřední člen pásu matice (je závislý na u[j, i] z předchozího řádku u)
 
     # je třeba získat nový řádek u[j+1, :], přičemž jeho krajní body, čili i=0, i=n jsou přímo vyjádřeny okrajovou podmínkou
     # prostřední body, odpovídající i=1 až i=(n-1) včetně, jsou řešením matice soustavy A · u_new = b, matice je tedy tvaru (n-1)·(n-1)
@@ -36,7 +38,7 @@ def solve_problem():
     # cenou za linearizaci problému je to, že se matice A mění každou iteraci j (člen D závislý na u[j, :])
 
     for j in range(0, m):
-        u_ij = u_final[j, :] # předchozí řádek
+        u_ij = u_final[j, :]  # předchozí řádek
 
         A = np.zeros((n - 1, n - 1), dtype='float64')
 
@@ -62,17 +64,22 @@ def solve_problem():
         # nyní je vyřešena soustava rovnic a sestaven nový řádek u[j+1, :]
         u_new = solve(A, b)
 
-        u_final[j+1, (0, -1)] = 1  # okrajové hondoty známe z okrajové podmínky
-        u_final[j+1, 1:-1] = u_new.T  # prostřední hodnoty z řešení soustavy rovnic
+        u_final[j + 1, (0, -1)] = 1  # okrajové hondoty známe z okrajové podmínky
+        u_final[j + 1, 1:-1] = u_new.T  # prostřední hodnoty z řešení soustavy rovnic
 
-    print(u_final) # debug
+    # print(u_final) # debug
 
-    # draw_result(x_i, t_j, u_final)
+    draw_result(x_i, t_j, u_final)
 
 
 # vykreslit 3D graf z řešení parciální diferenciální rovnice
 def draw_result(x_i, t_j, u):
-    pass
+    plt.title('Řešení úlohy 2')
+    plt.xlabel('x')
+    plt.ylabel('t')
+    plt.imshow(u, interpolation='none', extent=[np.min(x_i), np.max(x_i), np.max(t_j), np.min(t_j)])
+    plt.colorbar()
+    plt.show()
 
 
 # spustit program

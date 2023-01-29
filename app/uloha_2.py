@@ -28,7 +28,8 @@ def solve_problem(n, m, delta, diff, log):
     u_final = np.zeros((m + 1, n + 1))
     u_final[0, :] = u_i0  # první řádek (j=0) známe
 
-    C = diff * k / h / h  # alpha = k/h^2, pro snazší zápis pojmenováno C
+    # C = alpha, D = beta (oproti protokolu přejmenováno pro snazší zápis)
+    C = diff * k / h / h  # alpha = k/h^2
     D = lambda u: 1 + C + delta*k*u  # prostřední člen pásu matice (je závislý na u[j, i] z předchozího řádku u)
 
     # je třeba získat nový řádek u[j+1, :], přičemž jeho krajní body, čili i=0, i=n jsou přímo vyjádřeny okrajovou podmínkou

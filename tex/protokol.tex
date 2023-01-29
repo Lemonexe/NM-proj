@@ -9,7 +9,7 @@
 \usepackage{amsmath}
 \usepackage{xcolor}
 \usepackage{hyperref}
-\usepackage[left = 2.0cm, right = 2.0cm, top = 2.5cm, bottom = 2.0cm]{geometry}
+\usepackage[left = 2.0cm, right = 2.0cm, top = 2.5cm, bottom = 2.5cm]{geometry}
 
 \begin{document}
 
@@ -26,6 +26,8 @@
 }
 \end{center}
 
+
+
 \newpage
 \section*{Úloha 1}
 Původní diferenciální rovnice popisující izotermní vnitřní difúzi v porézením katalyzátoru:
@@ -41,7 +43,7 @@ S okrajovými podmínkami:
 \end{align}
 Kde $y$~je bezrozměrná koncentrace, $x$~bezrozměrná souřadnice poloměru (0~je střed částice, 1~je její okraj), $a=1$~charakterizuje tvar částice (váleček), $\Phi=1$~Thieleho modul a $n=2$~řád reakce.
 
-Diferenciální rovnice (DR) druhého řádu je třeba nahradit soustavou dvou DR prvního řádu, kde nezávislé proměnné jsou $y_1$ a $y_2$:
+Diferenciální rovnice (DR) druhého řádu je třeba nahradit soustavou dvou DR prvního řádu, kde závislé proměnné jsou $y_1$ a $y_2$:
 \begin{align}
 	y_1 &= y
 	\\
@@ -74,7 +76,7 @@ Aby byla přibližně splněna okrajová podmínka, použiji Newtonovu metodu na
 	\eta_{k+1} = \eta_{k} + \frac{\phi(\eta_k)}{\phi'(\eta_k)}
 \end{equation}
 
-Kde $\phi'(\eta_k)$ je derivace $\phi$ podle $\eta$. Pro její vyčíslení zavedu variační rovnice pro nové nezávislé veličiny $p_1$, $p_2$:
+Kde $\phi'(\eta_k)$ je derivace $\phi$ podle $\eta$. Pro její vyčíslení zavedu variační rovnice pro nové závislé veličiny $p_1$, $p_2$:
 \begin{align}
 	p_1 &= \frac{\partial y_1}{\partial \eta}
 	\\
@@ -140,7 +142,112 @@ Následně řeším soustavu DR bez variačních rovnic, čili pouze rovnice~\re
 
 Implementace tohoto postupu je v souboru \textit{app/uloha\_1.py}.
 
+
+
 \newpage
 \section*{Úloha 2}
-asdf
+Původní parciální diferenciální rovnice (PDR) popisující dynamiku vnitřní difúze v částici katalyzátoru s reakcí druhého řádu:
+
+\begin{equation}
+	\frac{\partial u}{\partial t} = \frac{\partial^2 u}{\partial x^2} - \delta u^2
+\end{equation}
+
+S počáteční podmínkou:
+\begin{align}
+	u(x,0) = 4 (x - \tfrac{1}{2})^2 && x \in \langle0, 1\rangle
+\end{align}
+
+A s okrajovými podmínkami:
+\begin{align}
+	u(0,t) = u(1,t) = 1 && t > 0
+\end{align}
+
+Přičemž $u$ značí koncentraci, $x$~prostorovu souřadnici průměru (od kraje ke kraji), $t$~čas a $\delta$~rychlostní konstantu reakce (všechny veličiny v bezrozměrném tvaru).\\
+Pozn.: před člen s druhou derivací dle $x$~by bylo možné přidat $D$, bezrozměrný difúzní koecifient, aby byl systém plně parametrizován.
+
+Tato PDR bude řešena metodou Crankovou-Nicholsonové pro $t \in \langle0, 1\rangle$~a $\delta = 1$.
+Aby ji bylo možné touto metodou řešit, je třeba provést linearizaci.
+
+Nejprve však na intervalech $x \in \langle0, 1\rangle$, $t \in \langle0, 1\rangle$ tabeluji hodnoty nezávislých veličin:
+\begin{align}
+	x_i = i h && h &= 1/n && i = 0...n
+	\\
+	t_j = i h && k &= 1/m && j = 0...m
+\end{align}
+
+Řešení tedy budu hledat na této množině:
+\begin{equation}
+	D^{h,k} = \left\{ (x_i, t_j), i = 0...n, j = 0...m \right\}
+\end{equation}
+
+Na této množině provedu náhradu derivací diferenčními formulemi, abych získal přibližné řešení: $u(x_i, t_j) \approx u_i^j$ \\
+Takto vyjádřím derivace v bodě $i$, $j+1$:
+\begin{align}
+	\frac{\partial u}{\partial t}(x_i, t_{j+1}) &=
+	\frac{u_i^{j+1} - u_i^j}{k}
+	\\
+	\frac{\partial^2 u}{\partial x^2}(x_i, t_{j+1}) &=
+	\frac{1}{2} \frac{u_{i-1}^{j+1} - 2 u_i^{j+1} + u_{i+1}^{j+1}}{h^2} +
+	\frac{1}{2} \frac{u_{i-1}^j - 2 u_i^j + u_{i+1}^j}{h^2}
+\end{align}
+
+Dále, nelineární člen $(u_{i}^{j+1})^2$ linearizuji jako $u_{i}^{j} u_{i}^{j+1}$
+
+Aproximaci PDR na množině $D^{h,k}$ pak lze sestavit takto:
+
+\begin{equation}
+	\frac{u_i^{j+1} - u_i^j}{k} =
+	\frac{1}{2} \frac{u_{i-1}^{j+1} - 2 u_i^{j+1} + u_{i+1}^{j+1}}{h^2} +
+	\frac{1}{2} \frac{u_{i-1}^j - 2 u_i^j + u_{i+1}^j}{h^2} +
+	u_{i}^{j} u_{i}^{j+1}
+\end{equation}
+
+Pro přehlednost definuji $\alpha = k / h^2$ a PDR upravím:
+\begin{equation}
+\label{apxPDR}
+	-\tfrac{\alpha}{2} u_{i-1}^{j+1} +
+	(1 + \alpha + k u_i^j) u_i^{j+1} -
+	-\tfrac{\alpha}{2} u_{i+1}^{j+1} =
+	\tfrac{\alpha}{2} \left( u_{i-1}^j - 2 u_i^j + u_{i+1}^j \right) + u_i^j
+\end{equation}
+
+Řešením této aproximované PDR je matice $U = \left( u_i^j \right)$.
+Postup k jejímu získání je následující: na počátku znám první řádek $u_i^0 = 4(x_i - \tfrac{1}{2})^2$ a postupně získávám další řádky (iteruji $j+1$).
+
+Z řádku $j+1$ vždy znám hodnoty $u_0^{j+1} = u_n^{j+1} = 1$.
+
+Zbývající hodnoty $u_i^{j+1}$ v $i=1...(n-1)$ získám řešením soustavy $(n-1)$ lineárních rovnic~\ref{apxPDR}, kde každá tato rovnice vyjadřuje platnost PDR pro bod $u_i^{j+1}$ v daném $i$.
+
+Tato soustava je zapsána maticově:
+\begin{equation}
+	A^j u^{j+1} = b^j
+\end{equation}
+
+Maticový zápis PDR~\ref{apxPDR} je rozepsán pro příklad s $n=5$:
+\begin{equation}
+\begin{pmatrix}
+	\beta & \tfrac{\alpha}{2} & 0 & 0 \\
+	\tfrac{\alpha}{2} & \beta & \tfrac{\alpha}{2} & 0 \\
+	0 & \tfrac{\alpha}{2} & \beta & \tfrac{\alpha}{2} \\
+	0 & 0 & \tfrac{\alpha}{2} & \beta
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+	u_1^{j+1} \\ u_2^{j+1} \\ u_3^{j+1} \\ u_4^{j+1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+	\tfrac{\alpha}{2} \left( 1 - 2 u_1^j + u_2^j \right) + u_1^j + \tfrac{\alpha}{2} \\
+	\tfrac{\alpha}{2} \left( u_{i-1}^j - 2 u_i^j + u_{i+1}^j \right) + u_i^j \\
+	\tfrac{\alpha}{2} \left( u_{i-1}^j - 2 u_i^j + u_{i+1}^j \right) + u_i^j \\
+	\tfrac{\alpha}{2} \left( u_{n-2}^j - 2 u_{n-1}^j + 1 \right) + u_{n-1}^j + \tfrac{\alpha}{2} \\
+\end{pmatrix}
+\end{equation}
+Kde člen $\beta$ je definován jako $1 + \alpha + k u_i^j$
+
+Řešení soustavy rovnic je realizováno pomocí algoritmu z open-source knihovny \textcolor{blue}{\underline{\href{https://numpy.org/}{numpy}}}.\\
+Tímto postupem je řádek po řádku získána celá matice $U$.
+
+Implementace tohoto postupu je v souboru \textit{app/uloha\_2.py}.
+
 \end{document}

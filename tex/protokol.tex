@@ -9,6 +9,8 @@
 \usepackage{amsmath}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
 \usepackage[left = 2.0cm, right = 2.0cm, top = 2.5cm, bottom = 2.5cm]{geometry}
 
 \begin{document}
@@ -249,5 +251,26 @@ Kde člen $\beta$ je definován jako $1 + \alpha + k u_i^j$
 Tímto postupem je řádek po řádku získána celá matice $U$.
 
 Implementace tohoto postupu je v souboru \textit{app/uloha\_2.py}.
+
+
+
+\newpage
+\section*{Výsledky}
+Průběh řešení DR z úlohy 1 je znázorněn na grafu níže.
+Řešení je na pohled hladké, bez oscilací, a splňuje okrajové podmínky se zadanou přesností.
+\begin{figure}[H]
+\begin{center}
+	\includegraphics[width=0.75\textwidth]{uloha_1.png}
+\end{center}
+\end{figure}
+
+Průběh řešení PDR z úlohy 2 je znázorněn na grafu níže.
+Je pozorována oscilace mezi jednotlivými řádky, avšak jen mírná a jen při krajích, kde je koncentrační gradient velice strmý. \\
+Pozn. snížení parametru $\delta$ vede k hladkému průběhu bez oscilací.
+\begin{figure}[H]
+\begin{center}
+	\includegraphics[width=0.75\textwidth]{uloha_2.png}
+\end{center}
+\end{figure}
 
 \end{document}

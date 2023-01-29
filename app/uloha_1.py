@@ -1,11 +1,14 @@
+import click  # pomůcka CLI interakci s programem
 from scipy.integrate import solve_ivp
 from matplotlib import pyplot as plt
 
 
+@click.command()
+@click.option('--eps', default=1e-4, metavar='eps', help='mez pro stanovení konvergence eta')
+@click.option('--ode-step', default=1e-4, metavar='ode_step', help='maximální krok x při řešení ODE')
 # funkce řídící logiku algoritmu od začátku do konce
-def solve_problem():
+def solve_problem(eps, ode_step):
     eta = 0.5  # počáteční odhad
-    eps = 1e-4  # mez pro stanovení konvergence eta (dle volby)
     k = 0  # čítač iterací při určení eta
     eta_prev = eta + 2*eps  # předchozí hodnota eta; nyní pouze dočasná hodnota pro umožnění prvního průchodu while cyklem
 
@@ -36,7 +39,8 @@ def solve_problem():
         u_i = get_u_i(eta)
 
         # získat řešení pro dané eta
-        sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=1e-3)
+        # toto řešení stačí s menší přesností, krok x pro řešič ODE je proto násoben deseti (rychlejší výpočet)
+        sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=(ode_step * 10))
         u = sol.y
         # okrajové hodnoty y1(1), y2(1), p1(1), p2(1)
         y1_e, y2_e, p1_e, p2_e = u[:, -1]
@@ -48,23 +52,23 @@ def solve_problem():
         # uložení staré hodnoty eta a získání nové Newtonovou metodou
         eta_prev = eta
         eta = eta - theta/dtheta
-        print('k = {:.0f}    eta ={:7.4f}    theta ={:7.4f}'.format(k, eta, theta))
+        click.echo('k = {:.0f}    eta ={:7.4f}    theta ={:7.4f}'.format(k, eta, theta))
 
-    print('Dosažena konvergence, zahájeno poslední řešení')
+    click.echo('Dosažena konvergence, zahájeno poslední řešení')
 
     # získat řešení pro konečnou hodnotu eta
     # přičemž závislé proměnné sady diferenciálních rovnic jsou nyní pouze u = (y1, y2)
-    # toto řešení je provedeno s větší přesností (nižší max_step)
+    # toto řešení je už provedeno s požadovanou přesností ode_step
     du = lambda x, u: (dy1(x, *u), dy2(x, *u))
     u_i = get_u_i(eta)[0:2]
-    sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=1e-4)
+    sol = solve_ivp(du, x_span, u_i, method='RK45', max_step=ode_step)
     x = sol.t
     u = sol.y
     y1 = u[0, :]
     y2 = u[1, :]
-    print('Okrajové hodnoty výsledného řešení:')
-    print('y(1) ={:7.4f}    dy(1)/dx ={:7.4f}'.format(y1[-1], y2[-1]))
-    print('Pro úplné řešení viz graf')
+    click.echo('Okrajové hodnoty výsledného řešení:')
+    click.echo('y(1) ={:7.4f}    dy(1)/dx ={:7.4f}'.format(y1[-1], y2[-1]))
+    click.echo('Pro úplné řešení viz graf')
     draw_result(x, y1, y2)
 
 
@@ -91,4 +95,5 @@ def draw_result(x, y1, y2):
 
 
 # spustit program
-solve_problem()
+if __name__ == '__main__':  # možné pouze z konzole
+    solve_problem()

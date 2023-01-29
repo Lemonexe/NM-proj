@@ -1,4 +1,4 @@
-import click  # pomůcka CLI interakci s programem
+import click  # pomůcka pro CLI interakci s programem
 from scipy.integrate import solve_ivp
 from matplotlib import pyplot as plt
 

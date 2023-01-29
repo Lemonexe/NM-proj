@@ -45,7 +45,7 @@ S okrajovými podmínkami:
 \end{align}
 Kde $y$~je bezrozměrná koncentrace, $x$~bezrozměrná souřadnice poloměru (0~je střed částice, 1~je její okraj), $a=1$~charakterizuje tvar částice (váleček), $\Phi=1$~Thieleho modul a $n=2$~řád reakce.
 
-Diferenciální rovnice (DR) druhého řádu je třeba nahradit soustavou dvou DR prvního řádu, kde závislé proměnné jsou $y_1$ a $y_2$:
+Diferenciální rovnici (DR) druhého řádu je třeba nahradit soustavou dvou DR prvního řádu, kde závislé proměnné jsou $y_1$ a $y_2$:
 \begin{align}
 	y_1 &= y
 	\\
@@ -73,7 +73,7 @@ Volba $\eta$ je přijatelná tehdy, když je přibližně splněna okrajová pod
 	\phi(\eta) = y_1(1, \eta) - 1
 \end{equation}
 
-Aby byla přibližně splněna okrajová podmínka, použiji Newtonovu metodu na získání vhodnější hodnoty $\eta$:
+Aby byla přibližně splněna okrajová podmínka, použiji Newtonovu metodu na získání vhodnější hodnoty $\eta$ (iteruji s čítačem $k$):
 \begin{equation}
 	\eta_{k+1} = \eta_{k} + \frac{\phi(\eta_k)}{\phi'(\eta_k)}
 \end{equation}
@@ -113,7 +113,7 @@ S odpovídajícími počátečními podmínkami:
 
 Nyní lze vyjádřit derivaci $\phi'(\eta_k)$:
 \begin{equation}
-	\phi' = \frac{\partial \phi}{\eta} = \frac{\partial (y_1(1, \eta) - 1)}{\eta} = p_1(1, \eta)
+	\phi' = \frac{\partial \phi}{\partial \eta} = \frac{\partial (y_1(1, \eta) - 1)}{\partial \eta} = p_1(1, \eta)
 \end{equation}
 
 A tedy dosadit do vzorce pro Newtonovu metodu:
@@ -138,11 +138,13 @@ A tedy dosadit do vzorce pro Newtonovu metodu:
 	p_2(0) = 0
 \end{align}
 
+Postup zahájím volbou např. $\eta = \tfrac{1}{2}$ a výše uvedený postup iteruji přes $k$. \\
 Iteraci $k$ ukončím tehdy, když $|\eta_{k+1} - \eta_{k}| < \epsilon$, kde $\epsilon$ je zvolená mez pro stanovení konvergence.
 Následně řeším soustavu DR bez variačních rovnic, čili pouze rovnice~\ref{ode1}~a~\ref{ode2}. \\
 Řešením soustavy jsou vektory $x$, $y_1$ a $y_2$, což je výsledek této úlohy.
 
-Implementace tohoto postupu je v souboru \textit{app/uloha\_1.py}.
+Implementace tohoto postupu je v souboru \textit{app/uloha\_1.py}. \\
+Výsledky jsou uvedeny v poslední kapitole.
 
 
 
@@ -174,7 +176,7 @@ Nejprve však na intervalech $x \in \langle0, 1\rangle$, $t \in \langle0, 1\rang
 \begin{align}
 	x_i = i h && h &= 1/n && i = 0...n
 	\\
-	t_j = i h && k &= 1/m && j = 0...m
+	t_j = j k && k &= 1/m && j = 0...m
 \end{align}
 
 Řešení tedy budu hledat na této množině:
@@ -209,7 +211,7 @@ Pro přehlednost definuji $\alpha = k / h^2$ a PDR upravím:
 \label{apxPDR}
 	-\tfrac{\alpha}{2} u_{i-1}^{j+1} +
 	(1 + \alpha + k u_i^j) u_i^{j+1} -
-	-\tfrac{\alpha}{2} u_{i+1}^{j+1} =
+	\tfrac{\alpha}{2} u_{i+1}^{j+1} =
 	\tfrac{\alpha}{2} \left( u_{i-1}^j - 2 u_i^j + u_{i+1}^j \right) + u_i^j
 \end{equation}
 
@@ -250,7 +252,8 @@ Kde člen $\beta$ je definován jako $1 + \alpha + k u_i^j$
 Řešení soustavy rovnic je realizováno pomocí algoritmu z open-source knihovny \textcolor{blue}{\underline{\href{https://numpy.org/}{numpy}}}.\\
 Tímto postupem je řádek po řádku získána celá matice $U$.
 
-Implementace tohoto postupu je v souboru \textit{app/uloha\_2.py}.
+Implementace tohoto postupu je v souboru \textit{app/uloha\_2.py}. \\
+Výsledky jsou uvedeny v poslední kapitole.
 
 
 

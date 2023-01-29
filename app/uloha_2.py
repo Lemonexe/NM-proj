@@ -1,4 +1,4 @@
-import click  # pomůcka CLI interakci s programem
+import click  # pomůcka pro CLI interakci s programem
 import numpy as np
 from numpy.linalg import solve
 from matplotlib import pyplot as plt
@@ -9,11 +9,11 @@ from matplotlib import pyplot as plt
 @click.option('-m', default=100, metavar='m', help='počet úseků v intervalu t_j')
 @click.option('--delta', default=1.0, metavar='delta', help='bezrozměrná rychlostní konstanta reakce (jen na hraní)')
 @click.option('--diff', default=1.0, metavar='diff', help='bezrozměrný difúzní koeficient (jen na hraní)')
-@click.option('--log', is_flag=True, metavar='log', help='vypsat matici u do konzole (doporučeno jen pro malé n,m)')
+@click.option('--log', is_flag=True, metavar='log', help='vypsat matici U do konzole (doporučeno jen pro malé n,m)')
 # funkce řídící logiku algoritmu od začátku do konce
 def solve_problem(n, m, delta, diff, log):
-    k = 1 / n  #  krok k pro x_i
-    h = 1 / m  #  krok h pro t_j
+    k = 1 / n  # krok k pro x_i
+    h = 1 / m  # krok h pro t_j
 
     # tabelace x_i, t_j
     x_i = np.linspace(0, 1, num=(n + 1))
@@ -24,9 +24,9 @@ def solve_problem(n, m, delta, diff, log):
     # počáteční podmínka: u v bodech x_i, t = 0
     u_i0 = 4 * (x_i - .5)**2
 
-    # matice bodů řešení, kde u[j, i] = u(x_i, t_j)
-    u_final = np.zeros((m + 1, n + 1))
-    u_final[0, :] = u_i0  # první řádek (j=0) známe
+    # matice bodů řešení U, kde u[j, i] = u(x_i, t_j)
+    U = np.zeros((m + 1, n + 1))
+    U[0, :] = u_i0  # první řádek (j=0) známe
 
     # C = alpha, D = beta (oproti protokolu přejmenováno pro snazší zápis)
     C = diff * k / h / h  # alpha = k/h^2
@@ -39,7 +39,7 @@ def solve_problem(n, m, delta, diff, log):
     # cenou za linearizaci problému je to, že se matice A mění každou iteraci j (člen D závislý na u[j, :])
 
     for j in range(0, m):
-        u_ij = u_final[j, :]  # předchozí řádek
+        u_ij = U[j, :]  # předchozí řádek
 
         A = np.zeros((n - 1, n - 1), dtype='float64')
 
@@ -65,14 +65,14 @@ def solve_problem(n, m, delta, diff, log):
         # nyní je vyřešena soustava rovnic a sestaven nový řádek u[j+1, :]
         u_new = solve(A, b)
 
-        u_final[j + 1, (0, -1)] = 1  # okrajové hodnoty známe z okrajové podmínky
-        u_final[j + 1, 1:-1] = u_new.T  # prostřední hodnoty z řešení soustavy rovnic
+        U[j + 1, (0, -1)] = 1  # okrajové hodnoty známe z okrajové podmínky
+        U[j + 1, 1:-1] = u_new.T  # prostřední hodnoty z řešení soustavy rovnic
     click.echo('Řešení dokončeno, viz graf')
 
     if log:
         np.set_printoptions(precision=3)
-        click.echo(u_final)
-    draw_result(x_i, t_j, u_final)
+        click.echo(U)
+    draw_result(x_i, t_j, U)
 
 
 # vykreslit 3D graf z řešení parciální diferenciální rovnice

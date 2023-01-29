@@ -7,7 +7,7 @@ Vypracoval Jiří Zbytovský ([email](zbytovsi@vscht.cz))
 
 Program byl vyvíjen v pythonu 3.11, v prostředí pipenv, v konzoli Windows cmd.
 
-Kromě toho jsou zde použity knihovny `numpy` (na řešení soustav lin. rovnic), `scipy` (na řešení ODE), `matplotlib` (vykreslení grafu) a `click` (rozhraní). Instalace doporučena pomocí `pipenv`, avšak lze spustit i ve výchozím prostředí pomocí `pip`.  
+Kromě toho jsou zde použity knihovny `numpy` (na řešení soustav lin. rovnic), `scipy` (na řešení počátečního problému ODE), `matplotlib` (vykreslení grafu) a `click` (rozhraní). Instalace doporučena pomocí `pipenv`, avšak lze spustit i ve výchozím prostředí pomocí `pip`.  
 Do konzole tedy zadejte následující příkazy jedním z těchto postupů.  
 Výsledkem je graf řešení či výstup do konzole _(pozn. pro pokračování je třeba zavřít graf)_
 
@@ -32,20 +32,20 @@ deactivate
 
 ### Parametry
 
-Výše popsaný postup spustí obě úlohy s vhodnými výchozími paramatery.  
-Parametr `--help` zobrazí možnosti argumentů.
+Ve výše popsaném postupu jsou obě úlohy spuštěny s vhodnými výchozími paramatery.  
+Parametr `--help` k úlohám zobrazí možnosti parametrů.
 
-V úloze 1 lze zadat:
+V úloze 1 lze zadat parametry:
 - `eps` = _ε_ (mez konvergence _θ_)
 - `ode-step` = maximální krok _x_ při řešení ODE, určuje přesnost tohoto řešení
 
-V úloze 2 lze zadat:
+V úloze 2 lze zadat parametry:
 - `n` = počet úseků, na který je rozdělen interval _x_
 - `m` = počet úseků, na který je rozdělen interval _t_
 - `delta` = bezrozměrná rychlostní konstanta reakce _(jen pro experimentování, jinak 1 jako zadaná hodnota)_
 - `diff` = bezrozměrný difúzní koeficient _(jen pro experimentování, jinak 1 jako zadaná hodnota)_
 
-Např. `pipenv run uloha_2.py --delta 2e-4 --diff .3` poskytuje esteticky zajímavý výsledek...
+Např. `pipenv run app\uloha_2.py --delta 2e-4 --diff .3` poskytuje esteticky zajímavý výsledek...
 
 ## Development
 
@@ -57,5 +57,5 @@ Run prettier:
 Run lint:
 `pipenv run lint`
 
-Compile LaTeX (cd tex):
-`pdflatex protokol.tex`
+Compile LaTeX:
+`cd tex`,  `pdflatex protokol.tex`

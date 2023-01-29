@@ -15,8 +15,8 @@ Výsledkem je graf řešení či výstup do konzole _(pozn. pro pokračování j
 
 ```bat
 pipenv install
-pipenv run uloha1.py
-pipenv run uloha2.py
+pipenv run app\uloha_1.py
+pipenv run app\uloha_2.py
 ```
 
 ### B) výchozí python na Windows
@@ -25,8 +25,8 @@ pipenv run uloha2.py
 py -3 -m venv venv
 venv\scripts\activate
 python -m pip install -r requirements.txt
-python uloha1.py
-python uloha2.py
+python app\uloha_1.py
+python app\uloha_2.py
 deactivate
 ```
 
@@ -56,3 +56,6 @@ Run prettier:
 
 Run lint:
 `pipenv run lint`
+
+Compile LaTeX (cd tex):
+`pdflatex protokol.tex`

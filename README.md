@@ -45,8 +45,6 @@ V úloze 2 lze zadat parametry:
 - `delta` = bezrozměrná rychlostní konstanta reakce _(jen pro experimentování, jinak 1 jako zadaná hodnota)_
 - `diff` = bezrozměrný difúzní koeficient _(jen pro experimentování, jinak 1 jako zadaná hodnota)_
 
-Např. `pipenv run app\uloha_2.py --delta 2e-4 --diff .3` poskytuje esteticky zajímavý výsledek...
-
 ## Development
 
 `pipenv install --dev`

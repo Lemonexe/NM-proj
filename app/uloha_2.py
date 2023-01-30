@@ -34,8 +34,8 @@ def solve_problem(n, m, delta, diff, log):
 
     # je třeba získat nový řádek u[j+1, :], přičemž jeho krajní body, čili i=0, i=n jsou přímo vyjádřeny okrajovou podmínkou
     # prostřední body, odpovídající i=1 až i=(n-1) včetně, jsou řešením matice soustavy A · u_new = b, matice je tedy tvaru (n-1)·(n-1)
-    # důsledkem je, že číslování matice A a vektoru b se liší od číslování u,x,t; např. druhý člen u_new, což je u[j+1, 1], odpovídá pozici A[k, 0] pro každou rovnici k
-    # přičemž rovnice k je vyjádřením PDR pro bod x_(k+1), t_(j+1)
+    # důsledkem je, že číslování matice A a vektoru b se liší od číslování u,x,t; např. druhý člen u_new, což je u[j+1, 1], odpovídá pozici A[r, 0] pro každou rovnici r
+    # přičemž rovnice r je vyjádřením PDR pro bod x_(r+1), t_(j+1)
     # cenou za linearizaci problému je to, že se matice A mění každou iteraci j (člen D závislý na u[j, :])
 
     for j in range(0, m):
@@ -49,15 +49,15 @@ def solve_problem(n, m, delta, diff, log):
 
         # ostatní řádky matice A pro i = 2 až i=(n-2) včetně
         for i in range(2, n - 1):
-            k = i - 1
-            A[k, (k - 1):(k + 2)] = [-C / 2, D(u_ij[i]), -C / 2]
+            r = i - 1
+            A[r, (r - 1):(r + 2)] = [-C / 2, D(u_ij[i]), -C / 2]
 
         # vektor pravých stran b je tvaru (n-1)·1, přičemž k je opět čítač PDR
         b = np.zeros((n - 1, 1), dtype='float64')
         # všechny řádky b obsahují tento výraz...
         for i in range(1, n):
-            k = i - 1
-            b[k] = C / 2 * (u_ij[i - 1] - 2 * u_ij[i] + u_ij[i + 1]) + u_ij[i]
+            r = i - 1
+            b[r] = C / 2 * (u_ij[i - 1] - 2 * u_ij[i] + u_ij[i + 1]) + u_ij[i]
 
         # ...k prvním a posledním řádkům je ještě přičten výraz vyjadřující známé hodnoty pro i=0, i=n
         b[(0, -1), 0] += C / 2

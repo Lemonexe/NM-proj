@@ -2,6 +2,7 @@ import click  # pomůcka pro CLI interakci s programem
 import numpy as np
 from numpy.linalg import solve
 from matplotlib import pyplot as plt
+from matplotlib import cm
 
 
 @click.command()
@@ -10,8 +11,9 @@ from matplotlib import pyplot as plt
 @click.option('--delta', default=1.0, metavar='delta', help='bezrozměrná rychlostní konstanta reakce (jen na hraní)')
 @click.option('--diff', default=1.0, metavar='diff', help='bezrozměrný difúzní koeficient (jen na hraní)')
 @click.option('--log', is_flag=True, metavar='log', help='vypsat matici U do konzole (doporučeno jen pro malé n,m)')
+@click.option('--colormap', is_flag=True, metavar='colormap', help='vykreslit graf jako barevnou mapu namísto 3D')
 # funkce řídící logiku algoritmu od začátku do konce
-def solve_problem(n, m, delta, diff, log):
+def solve_problem(n, m, delta, diff, log, colormap):
     k = 1 / n  # krok k pro x_i
     h = 1 / m  # krok h pro t_j
 
@@ -72,16 +74,31 @@ def solve_problem(n, m, delta, diff, log):
     if log:
         np.set_printoptions(precision=3)
         click.echo(U)
-    draw_result(x_i, t_j, U)
+    elif colormap:
+        draw_colormap(x_i, t_j, U)
+    else:
+        draw_3D_plot(x_i, t_j, U)
 
 
-# vykreslit 3D graf z řešení parciální diferenciální rovnice
-def draw_result(x_i, t_j, u):
+# vykreslit barevnou mapu z řešení parciální diferenciální rovnice
+def draw_colormap(x_i, t_j, U):
     plt.title('Řešení úlohy 2 (u znázorněno barvou)')
     plt.xlabel('x')
     plt.ylabel('t')
-    plt.imshow(u, interpolation='none', extent=[np.min(x_i), np.max(x_i), np.max(t_j), np.min(t_j)])
+    plt.imshow(U, interpolation='none', extent=[np.min(x_i), np.max(x_i), np.max(t_j), np.min(t_j)])
     plt.colorbar()
+    plt.show()
+
+
+# vykreslit 3D graf z řešení parciální diferenciální rovnice
+def draw_3D_plot(x_i, t_j, U):
+    fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+    X, Y = np.meshgrid(x_i, t_j)  # připravit síť pro rendering 3D grafu
+    surface = ax.plot_surface(X, Y, U, cmap=cm.gnuplot, linewidth=0)
+    fig.colorbar(surface, shrink=0.5, aspect=10)
+    ax.set_title('Řešení úlohy 2')
+    ax.set_xlabel('x')
+    ax.set_ylabel('t')
     plt.show()
 
 
